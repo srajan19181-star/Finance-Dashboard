@@ -4,7 +4,7 @@ import { addTransaction, editTransaction } from "../../features/transactions/tra
 import { closeModal } from "../../features/ui/uiSlice";
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:bg-slate-750 dark:focus:ring-blue-900/30";
+  "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition-all duration-200 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700/60 dark:bg-slate-950/40 dark:text-slate-100 dark:hover:border-slate-600 dark:focus:border-blue-500 dark:focus:ring-blue-900/40 dark:placeholder-slate-500";
 
 const EMPTY_FORM = {
   title: "",
@@ -166,7 +166,7 @@ export default function TransactionFormModal() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 active:bg-blue-800 transition-colors duration-150"
+            className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700 hover:shadow-blue-500/30 active:scale-[0.98] transition-all duration-150"
           >
             {editingTransaction ? "Update Transaction" : "Add Transaction"}
           </button>
