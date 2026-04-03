@@ -11,7 +11,7 @@ import {
 } from "../../features/transactions/transactionsSlice";
 
 const inputClass =
-  "w-full rounded-xl border border-white/10 dark:border-slate-700/30 bg-white/10 dark:bg-slate-800/40 backdrop-blur-sm px-3 py-2.5 text-sm text-slate-800 dark:text-slate-200 outline-none transition focus:border-blue-400/70 focus:ring-2 focus:ring-blue-400/20 dark:focus:border-blue-500/50 dark:focus:ring-blue-900/20";
+  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-all duration-200 hover:border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-slate-700/60 dark:bg-slate-950/40 dark:text-slate-100 dark:hover:border-slate-600 dark:focus:border-blue-500 dark:focus:ring-blue-900/40 dark:placeholder-slate-500";
 
 export default function TransactionFilters({ categories }) {
   const dispatch = useDispatch();
