@@ -3,43 +3,55 @@ import { useDispatch, useSelector } from "react-redux";
 import { addTransaction, editTransaction } from "../../features/transactions/transactionsSlice";
 import { closeModal } from "../../features/ui/uiSlice";
 
+const inputClass =
+  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:bg-slate-750 dark:focus:ring-blue-900/30";
+
+const EMPTY_FORM = {
+  title: "",
+  amount: "",
+  category: "",
+  type: "expense",
+  date: new Date().toISOString().slice(0, 10),
+};
+
 export default function TransactionFormModal() {
   const dispatch = useDispatch();
   const { isModalOpen, editingTransaction } = useSelector((state) => state.ui);
-
-  const [formData, setFormData] = useState({
-    title: "",
-    amount: "",
-    category: "",
-    type: "expense",
-    date: "",
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (editingTransaction) {
-      setFormData(editingTransaction);
+      setFormData({ ...editingTransaction, amount: String(editingTransaction.amount) });
     } else {
-      setFormData({
-        title: "",
-        amount: "",
-        category: "",
-        type: "expense",
-        date: "",
-      });
+      setFormData(EMPTY_FORM);
     }
-  }, [editingTransaction]);
+    setErrors({});
+  }, [editingTransaction, isModalOpen]);
 
   if (!isModalOpen) return null;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const validate = () => {
+    const errs = {};
+    if (!formData.title.trim()) errs.title = "Title is required";
+    if (!formData.amount || isNaN(formData.amount) || Number(formData.amount) <= 0)
+      errs.amount = "Enter a valid positive amount";
+    if (!formData.category.trim()) errs.category = "Category is required";
+    if (!formData.date) errs.date = "Date is required";
+    return errs;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!formData.title || !formData.amount || !formData.category || !formData.date) {
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
       return;
     }
 
@@ -54,67 +66,108 @@ export default function TransactionFormModal() {
     } else {
       dispatch(addTransaction(payload));
     }
-
     dispatch(closeModal());
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-6 dark:bg-slate-900">
-        <div className="mb-5 flex items-center justify-between">
-          <h3 className="text-xl font-semibold">
-            {editingTransaction ? "Edit Transaction" : "Add Transaction"}
-          </h3>
-          <button onClick={() => dispatch(closeModal())}>✕</button>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+    >
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-200/50 dark:border-slate-700/50">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-6 py-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+              {editingTransaction ? "Edit Transaction" : "Add Transaction"}
+            </h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+              {editingTransaction ? "Update the details below" : "Fill in the details below"}
+            </p>
+          </div>
+          <button
+            onClick={() => dispatch(closeModal())}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition"
+            aria-label="Close modal"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Title"
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 dark:border-slate-700 dark:bg-slate-800"
-          />
+        {/* Modal Body */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Title */}
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="e.g. Grocery shopping"
+              className={inputClass}
+            />
+            {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title}</p>}
+          </div>
 
-          <input
-            type="number"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            placeholder="Amount"
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 dark:border-slate-700 dark:bg-slate-800"
-          />
+          {/* Amount + Type row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">Amount (₹)</label>
+              <input
+                type="number"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                placeholder="0"
+                min="1"
+                className={inputClass}
+              />
+              {errors.amount && <p className="mt-1 text-xs text-red-500">{errors.amount}</p>}
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">Type</label>
+              <select name="type" value={formData.type} onChange={handleChange} className={inputClass}>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+            </div>
+          </div>
 
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="Category"
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 dark:border-slate-700 dark:bg-slate-800"
-          />
+          {/* Category */}
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">Category</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              placeholder="e.g. Food, Bills, Salary"
+              className={inputClass}
+            />
+            {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category}</p>}
+          </div>
 
-          <select
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 dark:border-slate-700 dark:bg-slate-800"
+          {/* Date */}
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-500 dark:text-slate-400">Date</label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className={inputClass}
+            />
+            {errors.date && <p className="mt-1 text-xs text-red-500">{errors.date}</p>}
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 active:bg-blue-800 transition-colors duration-150"
           >
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
-
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full rounded-xl border border-slate-300 px-3 py-3 dark:border-slate-700 dark:bg-slate-800"
-          />
-
-          <button className="w-full rounded-xl bg-blue-600 px-4 py-3 font-medium text-white">
             {editingTransaction ? "Update Transaction" : "Add Transaction"}
           </button>
         </form>

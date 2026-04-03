@@ -9,10 +9,10 @@ export default function RoleSwitcher() {
     <select
       value={currentRole}
       onChange={(e) => dispatch(setRole(e.target.value))}
-      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none dark:border-slate-700 dark:bg-slate-800"
+      className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:ring-blue-900/30"
     >
-      <option value="viewer">Viewer</option>
-      <option value="admin">Admin</option>
+      <option value="viewer">👁 Viewer</option>
+      <option value="admin">⚡ Admin</option>
     </select>
   );
 }

@@ -1,14 +1,92 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Base ─────────────────────────────────────────────────────────────────── */
 body {
   margin: 0;
   min-width: 320px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: #cbd5e1; border-radius: 99px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+/* ── Page transitions ─────────────────────────────────────────────────────── */
+main {
+  animation: fadeSlideUp 0.22s ease both;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ── Card entrance ────────────────────────────────────────────────────────── */
+.card-enter {
+  animation: cardIn 0.28s ease both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.97) translateY(6px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);   }
+}
+
+/* ── Staggered grid children ──────────────────────────────────────────────── */
+.grid > *:nth-child(1) { animation-delay: 0ms;   }
+.grid > *:nth-child(2) { animation-delay: 60ms;  }
+.grid > *:nth-child(3) { animation-delay: 120ms; }
+.grid > *:nth-child(4) { animation-delay: 180ms; }
+.grid > *:nth-child(5) { animation-delay: 240ms; }
+.grid > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ── Pulse skeleton (Tailwind animate-pulse fallback) ─────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
+.animate-pulse { animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* ── Sidebar slide-in ─────────────────────────────────────────────────────── */
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0);     }
+}
+
+/* ── Dropdown fade-in ─────────────────────────────────────────────────────── */
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Apply to export button dropdown */
+.dropdown-enter {
+  animation: dropIn 0.15s ease both;
+}
+
+/* ── Modal backdrop animation ─────────────────────────────────────────────── */
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Row hover glow (applied via JS class or Tailwind) ───────────────────── */
+tr:hover td {
+  transition: background-color 0.1s ease;
+}
+
+/* ── Focus ring polish ────────────────────────────────────────────────────── */
+input:focus, select:focus, button:focus-visible {
+  outline: none;
 }

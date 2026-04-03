@@ -8,6 +8,7 @@ const uiSlice = createSlice({
     darkMode: savedTheme === "dark",
     isModalOpen: false,
     editingTransaction: null,
+    isSidebarOpen: false,
   },
   reducers: {
     toggleTheme: (state) => {
@@ -22,8 +23,14 @@ const uiSlice = createSlice({
       state.isModalOpen = false;
       state.editingTransaction = null;
     },
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+    closeSidebar: (state) => {
+      state.isSidebarOpen = false;
+    },
   },
 });
 
-export const { toggleTheme, openModal, closeModal } = uiSlice.actions;
+export const { toggleTheme, openModal, closeModal, toggleSidebar, closeSidebar } = uiSlice.actions;
 export default uiSlice.reducer;
